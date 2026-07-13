@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SCP-261", "SCP-261\SCP-261.csproj", "{B2D778FF-BAAC-429C-BE9B-169E01D05274}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scp261", "Scp261\Scp261.csproj", "{B2D778FF-BAAC-429C-BE9B-169E01D05274}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

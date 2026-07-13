@@ -2,8 +2,6 @@
 
     <PropertyGroup>
         <TargetFramework>net48</TargetFramework>
-        <AssemblyName>SCP-261</AssemblyName>
-        <RootNamespace>SCP-261</RootNamespace>
         <LangVersion>latest</LangVersion>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <PlatformTarget>x64</PlatformTarget>
@@ -11,6 +9,7 @@
         <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
         <Nullable>disable</Nullable>
         <Configurations>Debug;Release</Configurations>
+        <PackageId>Scp261</PackageId>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
@@ -35,6 +34,12 @@
         <PackageReference Include="System.Text.Json" Version="10.0.9" />
     </ItemGroup>
 
+    <ItemGroup>
+        <None Include="..\README.md" Pack="true" PackagePath="\"/>
+        <None Include="..\CHANGELOG.md" Pack="true" PackagePath="\"/>
+        <None Include="..\LICENSE" Pack="true" PackagePath="\"/>
+    </ItemGroup>
+    
     <ItemGroup>
         <Reference Include="Assembly-CSharp" HintPath="$(sl_References)\Assembly-CSharp.dll" Publicize="true"/>
         <Reference Include="CommandSystem.Core" HintPath="$(sl_References)\CommandSystem.Core.dll"/>
