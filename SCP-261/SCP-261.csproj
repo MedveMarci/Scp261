@@ -1,0 +1,53 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net48</TargetFramework>
+        <AssemblyName>SCP-261</AssemblyName>
+        <RootNamespace>SCP-261</RootNamespace>
+        <LangVersion>latest</LangVersion>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <PlatformTarget>x64</PlatformTarget>
+        <Platforms>x64</Platforms>
+        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+        <Nullable>disable</Nullable>
+        <Configurations>Debug;Release</Configurations>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+        <DebugSymbols>true</DebugSymbols>
+        <DebugType>embedded</DebugType>
+        <Optimize>false</Optimize>
+        <DefineConstants>DEBUG;TRACE</DefineConstants>
+        <OutputPath>bin\x64\Debug\</OutputPath>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+        <DebugType>pdbonly</DebugType>
+        <Optimize>true</Optimize>
+        <DefineConstants>TRACE</DefineConstants>
+        <OutputPath>bin\x64\Release\</OutputPath>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="BepInEx.AssemblyPublicizer.MSBuild" Version="0.4.3" PrivateAssets="all" />
+        <PackageReference Include="Northwood.LabAPI" Version="1.1.7" />
+        <PackageReference Include="System.Net.Http" Version="4.3.4"/>
+        <PackageReference Include="System.Text.Json" Version="10.0.9" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Reference Include="Assembly-CSharp" HintPath="$(sl_References)\Assembly-CSharp.dll" Publicize="true"/>
+        <Reference Include="CommandSystem.Core" HintPath="$(sl_References)\CommandSystem.Core.dll"/>
+        <Reference Include="Mirror" HintPath="$(sl_References)\Mirror.dll" Publicize="true"/>
+        <Reference Include="NorthwoodLib" HintPath="$(sl_References)\NorthwoodLib.dll"/>
+        <Reference Include="Pooling" HintPath="$(sl_References)\Pooling.dll"/>
+        <Reference Include="UnityEngine.PhysicsModule" HintPath="$(sl_References)\UnityEngine.PhysicsModule.dll"/>
+        <Reference Include="UnityEngine.CoreModule" HintPath="$(sl_References)\UnityEngine.CoreModule.dll"/>
+        <Reference Include="ProjectMER" HintPath="$(labapi_plugins)\ProjectMER.dll"/>
+    </ItemGroup>
+
+    <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+        <Exec Command="xcopy &quot;$(TargetPath)&quot; &quot;%appdata%\SCP Secret Laboratory\LabAPI\plugins\global\&quot; /y"/>
+    </Target>
+
+</Project>
