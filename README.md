@@ -31,14 +31,26 @@ Players holding a **coin** can interact with the SCP-261 vending machine. The co
 
 ---
 
+## Dependencies
+
+- **ProjectMER** — required for spawning the vending machine schematic.
+  Install it from: https://github.com/Michal78900/ProjectMER/
+
+---
+
 ## Installation
 
-1. Download the latest release from [GitHub Releases](https://github.com/MedveMarci/Scp261/releases/latest):
+1. Install [ProjectMER](https://github.com/Michal78900/ProjectMER/) if you haven't already.
+2. Download the latest release from [GitHub Releases](https://github.com/MedveMarci/Scp261/releases/latest):
    - `Scp261.dll`
-2. Place the `.dll` in your server's plugins folder:
+   - `Scp261.zip`
+3. Place the `.dll` in your server's plugins folder:
    - Linux: `~/.config/SCP Secret Laboratory/LabAPI/plugins/global/`
    - Windows: `%appdata%/SCP Secret Laboratory/LabAPI/plugins/global/`
-3. Start the server — the config file is generated automatically on first launch.
+4. Extract the `Scp261.zip` file and place it in the ProjectMER schematics folder:
+   - Linux: `~/.config/SCP Secret Laboratory/LabAPI/configs/ProjectMER/Schematics/`
+   - Windows: `%appdata%/SCP Secret Laboratory/LabAPI/configs/ProjectMER/Schematics/`
+5. Start the server — the config file is generated automatically on first launch.
 
 ---
 

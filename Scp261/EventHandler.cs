@@ -6,6 +6,9 @@ using LabApi.Events.Handlers;
 using LabApi.Features.Wrappers;
 using MapGeneration;
 using PlayerRoles.FirstPersonControl;
+using ProjectMER.Features;
+using ProjectMER.Features.Objects;
+using ProjectMER.Features.Serializable.Schematics;
 using Scp261.ApiFeatures;
 using UnityEngine;
 using Utils;
@@ -15,6 +18,7 @@ namespace Scp261;
 
 internal static class EventHandler
 {
+    private static SchematicObject _schematic;
     public static void EnableEvents()
     {
         PlayerEvents.InteractedToy += Interacted;
@@ -32,6 +36,18 @@ internal static class EventHandler
     private static void OnWaitingForPlayers()
     {
         VersionManager.CheckForUpdates();
+        if (_schematic != null)
+        {
+            _schematic.Destroy();
+            _schematic = null;
+        }
+        var schematic = new SerializableSchematic
+        {
+            SchematicName = "Scp261",
+            Position = new Vector3(6.816f, -1.428f, 6.550f),
+            Room = "Entrance_Straight_EzOfficeSmall"
+        };
+        _schematic = ObjectSpawner.SpawnSchematic(schematic);
     }
     
     private static void OnChangedRole(PlayerChangedRoleEventArgs ev)
