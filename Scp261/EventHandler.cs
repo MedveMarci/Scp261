@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using CustomPlayerEffects;
 using LabApi.Events.Arguments.PlayerEvents;
@@ -18,7 +19,7 @@ namespace Scp261;
 
 internal static class EventHandler
 {
-    private static SchematicObject _schematic;
+    private static readonly List<SchematicObject> _schematic = [];
     public static void EnableEvents()
     {
         PlayerEvents.InteractedToy += Interacted;
@@ -36,18 +37,33 @@ internal static class EventHandler
     private static void OnWaitingForPlayers()
     {
         VersionManager.CheckForUpdates();
-        if (_schematic != null)
+        foreach (var schematic in _schematic)
         {
-            _schematic.Destroy();
-            _schematic = null;
+            if (schematic == null)
+                continue;
+            schematic.Destroy();
         }
-        var schematic = new SerializableSchematic
+        _schematic.Clear();
+
+        foreach (var spawnLocation in Scp261.Singleton.Config.SpawnLocations)
         {
-            SchematicName = "Scp261",
-            Position = new Vector3(6.816f, -1.428f, 6.550f),
-            Room = "Entrance_Straight_EzOfficeSmall"
-        };
-        _schematic = ObjectSpawner.SpawnSchematic(schematic);
+            var chanceRoll = UnityEngine.Random.Range(0f, 100f);
+            if (chanceRoll > spawnLocation.Chance)
+                continue;
+            
+            var room = Room.List.FirstOrDefault(room => room.Name == spawnLocation.RoomName);
+            if (room == null)
+            {
+                LogManager.Warn($"Pickup spawn aborted: room '{spawnLocation.RoomName}' not found.");
+                continue;
+            }
+            
+            var position = room.Transform.TransformPoint(spawnLocation.Position);
+            var rotation = room.Transform.rotation * Quaternion.Euler(spawnLocation.Rotation);
+            
+            var schematic = ObjectSpawner.SpawnSchematic("Scp261", position, rotation);
+            _schematic.Add(schematic);
+        }
     }
     
     private static void OnChangedRole(PlayerChangedRoleEventArgs ev)

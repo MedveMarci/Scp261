@@ -2,12 +2,33 @@
 using System.ComponentModel;
 using CustomPlayerEffects;
 using InventorySystem.Items.Usables.Scp244.Hypothermia;
+using MapGeneration;
 using UnityEngine;
 
 namespace Scp261;
 
 public class Configs
 {
+    [Description("This option is for SCP-261 spawn locations")]
+    public List<CustomRoomLocationData> SpawnLocations { get; set; } =
+    [
+        new()
+        {
+            RoomName = RoomName.EzOfficeSmall,
+            Position = new Vector3(6.816f, -1.428f, 6.550f),
+            Rotation = new Vector3(0, -180, 0),
+            Chance = 100f
+        }
+    ];
+    
+    public class CustomRoomLocationData
+    {
+        public RoomName RoomName { get; set; }
+        public Vector3 Position { get; set; }
+        public Vector3 Rotation { get; set; }
+        public float Chance { get; set; }
+    }
+    
     [Description("Enable the effects module. When disabled, the vending machine will not apply effects to players.")]
     public bool EnableEffects { get; set; } = true;
     
@@ -125,5 +146,6 @@ public class Configs
     [Description("Maximum duration for effects applied by the vending machine:")]
     public int MaxEffectDuration { get; set; } = 25;
 
-    [Description("Size change settings:")] public Vector3 GnomedSize { get; set; } = new(1.13f, 0.5f, 1.13f);
+    [Description("Size change settings:")] 
+    public Vector3 GnomedSize { get; set; } = new(1.13f, 0.5f, 1.13f);
 }

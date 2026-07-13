@@ -17,15 +17,15 @@
 
 Players holding a **coin** can interact with the SCP-261 vending machine. The coin is consumed and one of the following outcomes is randomly selected based on configurable weights:
 
-| Outcome | Default Weight | Description |
-|---------|---------------|-------------|
-| Item | 50 | Dispenses a random item from the stock list |
-| Effect | 30 | Applies a random status effect for a random duration |
-| Size change | 5 | Shrinks the player (gnomed) until their next role change |
-| Teleport | 10 | Teleports the player to a random unlocked door |
-| Flashbang | 5 | Spawns a flash grenade at the player's feet |
-| Tantrum | 9 | Spawns a tantrum hazard at the player's location |
-| Explosion | 1 | Triggers a grenade explosion on the player |
+| Outcome     | Default Weight | Description                                              |
+|-------------|----------------|----------------------------------------------------------|
+| Item        | 50             | Dispenses a random item from the stock list              |
+| Effect      | 30             | Applies a random status effect for a random duration     |
+| Size change | 5              | Shrinks the player (gnomed) until their next role change |
+| Teleport    | 10             | Teleports the player to a random unlocked door           |
+| Flashbang   | 5              | Spawns a flash grenade at the player's feet              |
+| Tantrum     | 9              | Spawns a tantrum hazard at the player's location         |
+| Explosion   | 1              | Triggers a grenade explosion on the player               |
 
 > Weights do **not** need to add up to 100. Any module can be individually disabled — when disabled, it falls back to dispensing a random item instead.
 
@@ -62,26 +62,69 @@ The config file is generated at:
 
 ### Key settings
 
-| Option | Default | Description |
-|--------|---------|-------------|
-| `enable_effects` | `true` | Enable the effects module |
-| `enable_size_change` | `true` | Enable the size change (gnomed) module |
-| `enable_explode` | `true` | Enable the explosion module |
-| `enable_flashbang` | `true` | Enable the flashbang module |
-| `enable_tantrum` | `true` | Enable the tantrum module |
-| `random_teleport` | `true` | Enable the random teleport module |
-| `item_chance` | `50` | Weight for dispensing an item |
-| `effect_chance` | `30` | Weight for applying an effect |
-| `size_change_chance` | `5` | Weight for the size change |
-| `explode_chance` | `1` | Weight for the explosion |
-| `flashbang_chance` | `5` | Weight for the flashbang |
-| `tantrum_chance` | `9` | Weight for the tantrum |
-| `random_teleport_chance` | `10` | Weight for the teleport |
-| `min_effect_duration` | `10` | Minimum effect duration (seconds) |
-| `max_effect_duration` | `25` | Maximum effect duration (seconds) |
-| `gnomed_size` | `(1.13, 0.5, 1.13)` | Player scale when gnomed |
-| `vending_machine_stock` | *(see below)* | List of items the machine can dispense |
-| `effect_list` | *(see below)* | List of status effects the machine can apply |
+| Option                             | Default                                        | Description                                     |
+|------------------------------------|------------------------------------------------|-------------------------------------------------|
+| `spawn_locations`                  | *(see below)*                                  | List of spawn locations for the vending machine |
+| `enable_effects`                   | `true`                                         | Enable the effects module                       |
+| `enable_size_change`               | `true`                                         | Enable the size change (gnomed) module          |
+| `enable_explode`                   | `true`                                         | Enable the explosion module                     |
+| `enable_flashbang`                 | `true`                                         | Enable the flashbang module                     |
+| `enable_tantrum`                   | `true`                                         | Enable the tantrum module                       |
+| `random_teleport`                  | `true`                                         | Enable the random teleport module               |
+| `item_chance`                      | `50`                                           | Weight for dispensing an item                   |
+| `effect_chance`                    | `30`                                           | Weight for applying an effect                   |
+| `size_change_chance`               | `5`                                            | Weight for the size change                      |
+| `explode_chance`                   | `1`                                            | Weight for the explosion                        |
+| `flashbang_chance`                 | `5`                                            | Weight for the flashbang                        |
+| `tantrum_chance`                   | `9`                                            | Weight for the tantrum                          |
+| `random_teleport_chance`           | `10`                                           | Weight for the teleport                         |
+| `min_effect_duration`              | `10`                                           | Minimum effect duration (seconds)               |
+| `max_effect_duration`              | `25`                                           | Maximum effect duration (seconds)               |
+| `gnomed_size`                      | `(1.13, 0.5, 1.13)`                            | Player scale when gnomed                        |
+| `vending_machine_stock`            | *(see below)*                                  | List of items the machine can dispense          |
+| `effect_list`                      | *(see below)*                                  | List of status effects the machine can apply    |
+| `interaction_successful_items`     | `"The vending machine dispensed something."`   | Hint shown when an item is dispensed            |
+| `interaction_successful_effects`   | `"The vending machine shook violently."`       | Hint shown when an effect is applied            |
+| `interaction_successful_size`      | `"The vending machine gnomed you."`            | Hint shown on size change                       |
+| `interaction_successful_explode`   | `"The vending machine exploded."`              | Hint shown on explosion                         |
+| `interaction_successful_flashbang` | `"The vending machine dispensed a weird can."` | Hint shown on flashbang                         |
+| `interaction_successful_tantrum`   | `"You shit yourself."`                         | Hint shown on tantrum                           |
+| `interaction_successful_teleport`  | `"You teleported to somewhere."`               | Hint shown on teleport                          |
+| `interaction_failed_message`       | `"You aren't holding a coin!"`                 | Hint shown when the player has no coin          |
+
+### Default spawn locations
+
+By default, the vending machine spawns in the **LCZ 173** room with a 100% chance. Each entry in `spawn_locations` supports:
+
+| Field       | Description                                                      |
+|-------------|------------------------------------------------------------------|
+| `room_name` | The room where the machine spawns (uses `RoomName` enum values)  |
+| `position`  | Local-space offset within the room                               |
+| `rotation`  | Local-space rotation within the room                             |
+| `chance`    | Spawn chance (0–100). Roll must be **below** this value to spawn |
+
+### Available room names
+
+| Light Containment Zone | Heavy Containment Zone        | Entrance Zone       | Other     |
+|------------------------|-------------------------------|---------------------|-----------|
+| `LczClassDSpawn`       | `HczCheckpointToEntranceZone` | `EzCollapsedTunnel` | `Outside` |
+| `LczComputerRoom`      | `HczCheckpointA`              | `EzGateA`           | `Pocket`  |
+| `LczCheckpointA`       | `HczCheckpointB`              | `EzGateB`           | `Unnamed` |
+| `LczCheckpointB`       | `HczWarhead`                  | `EzRedroom`         |           |
+| `LczToilets`           | `Hcz049`                      | `EzEvacShelter`     |           |
+| `LczArmory`            | `Hcz079`                      | `EzIntercom`        |           |
+| `Lcz173`               | `Hcz096`                      | `EzOfficeStoried`   |           |
+| `LczGlassroom`         | `Hcz106`                      | `EzOfficeLarge`     |           |
+| `Lcz330`               | `Hcz939`                      | `EzOfficeSmall`     |           |
+| `Lcz914`               | `HczMicroHID`                 |                     |           |
+| `LczGreenhouse`        | `HczArmory`                   |                     |           |
+| `LczAirlock`           | `HczServers`                  |                     |           |
+|                        | `HczTesla`                    |                     |           |
+|                        | `HczTestroom`                 |                     |           |
+|                        | `Hcz127`                      |                     |           |
+|                        | `HczAcroamaticAbatement`      |                     |           |
+|                        | `HczWaysideIncinerator`       |                     |           |
+|                        | `HczRampTunnel`               |                     |           |
 
 ### Default item stock
 
