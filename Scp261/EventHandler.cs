@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using CustomPlayerEffects;
@@ -9,17 +9,17 @@ using MapGeneration;
 using PlayerRoles.FirstPersonControl;
 using ProjectMER.Features;
 using ProjectMER.Features.Objects;
-using ProjectMER.Features.Serializable.Schematics;
 using Scp261.ApiFeatures;
 using UnityEngine;
 using Utils;
-using Random = System.Random;
+using Random = UnityEngine.Random;
 
 namespace Scp261;
 
 internal static class EventHandler
 {
-    private static readonly List<SchematicObject> _schematic = [];
+    private static readonly List<SchematicObject> Schematic = [];
+
     public static void EnableEvents()
     {
         PlayerEvents.InteractedToy += Interacted;
@@ -37,217 +37,246 @@ internal static class EventHandler
     private static void OnWaitingForPlayers()
     {
         VersionManager.CheckForUpdates();
-        foreach (var schematic in _schematic)
+        foreach (var schematic in Schematic)
         {
             if (schematic == null)
                 continue;
             schematic.Destroy();
         }
-        _schematic.Clear();
 
-        foreach (var spawnLocation in Scp261.Singleton.Config.SpawnLocations)
+        Schematic.Clear();
+
+        var spawnLocations = Scp261.Singleton.Config.SpawnLocations;
+        if (spawnLocations == null || spawnLocations.Count == 0)
+            return;
+
+        if (Scp261.Singleton.Config.SpawnOnlyOnce)
         {
-            var chanceRoll = UnityEngine.Random.Range(0f, 100f);
+            var pickedLocation = PickWeightedLocation(spawnLocations);
+            if (pickedLocation != null)
+                SpawnSchematic(pickedLocation);
+            return;
+        }
+
+        foreach (var spawnLocation in spawnLocations)
+        {
+            var chanceRoll = Random.Range(0f, 100f);
             if (chanceRoll > spawnLocation.Chance)
                 continue;
-            
-            var room = Room.List.FirstOrDefault(room => room.Name == spawnLocation.RoomName);
-            if (room == null)
-            {
-                LogManager.Warn($"Pickup spawn aborted: room '{spawnLocation.RoomName}' not found.");
-                continue;
-            }
-            
-            var position = room.Transform.TransformPoint(spawnLocation.Position);
-            var rotation = room.Transform.rotation * Quaternion.Euler(spawnLocation.Rotation);
-            
-            var schematic = ObjectSpawner.SpawnSchematic("Scp261", position, rotation);
-            _schematic.Add(schematic);
+
+            SpawnSchematic(spawnLocation);
         }
     }
     
+    private static Configs.CustomRoomLocationData PickWeightedLocation(
+        List<Configs.CustomRoomLocationData> spawnLocations)
+    {
+        var totalWeight = spawnLocations.Sum(location => Mathf.Max(0f, location.Chance));
+        if (totalWeight <= 0f)
+            return null;
+
+        var roll = Random.Range(0f, totalWeight);
+        foreach (var location in spawnLocations)
+        {
+            roll -= Mathf.Max(0f, location.Chance);
+            if (roll <= 0f)
+                return location;
+        }
+
+        return spawnLocations[spawnLocations.Count - 1];
+    }
+
+    private static void SpawnSchematic(Configs.CustomRoomLocationData spawnLocation)
+    {
+        var room = Room.List.FirstOrDefault(room => room.Name == spawnLocation.RoomName);
+        if (room == null)
+        {
+            LogManager.Warn($"Pickup spawn aborted: room '{spawnLocation.RoomName}' not found.");
+            return;
+        }
+
+        var position = room.Transform.TransformPoint(spawnLocation.Position);
+        var rotation = room.Transform.rotation * Quaternion.Euler(spawnLocation.Rotation);
+
+        var schematic = ObjectSpawner.SpawnSchematic("Scp261", position, rotation);
+        Schematic.Add(schematic);
+    }
+
     private static void OnChangedRole(PlayerChangedRoleEventArgs ev)
     {
         if (ev.Player.Scale == Scp261.Singleton.Config.GnomedSize) ev.Player.Scale = Vector3.one;
     }
     
+    private static void GiveRandomItem(Player player)
+    {
+        var stock = Scp261.Singleton.Config.VendingMachineStock;
+        if (stock == null || stock.Count == 0)
+            return;
+
+        var item = player.AddItem(stock[Random.Range(0, stock.Count)]);
+        if (!Scp261.Singleton.Config.SpawnWeaponsWithAmmo && item is FirearmItem firearm)
+        {
+            if (firearm.StoredAmmo > 0) firearm.StoredAmmo = 0;
+            if (firearm.ChamberedAmmo > 0) firearm.ChamberedAmmo = 0;
+        }
+
+        player.SendHint(Scp261.Singleton.Config.InteractionSuccessfulItems, 5f);
+    }
+
     private static void Interacted(PlayerInteractedToyEventArgs ev)
     {
         var player = Player.Get(ev.Player.ReferenceHub);
         if (!ev.Interactable.GameObject.name.Equals("Vending")) return;
-        if (player.CurrentItem == null)
+
+        var activationItems = Scp261.Singleton.Config.ActivationItems;
+        if (player.CurrentItem == null || activationItems == null ||
+            !activationItems.Contains(player.CurrentItem.Type))
         {
             player.SendHint(Scp261.Singleton.Config.InteractionFailedMessage, 5f);
             return;
         }
 
-        if (player.CurrentItem.Type == ItemType.Coin)
-        {
-            player.RemoveItem(player.CurrentItem);
-            var weightedChances = new WeightedChanceExecutor(
-                new WeightedChanceParam(() =>
+        player.RemoveItem(player.CurrentItem);
+        var weightedChances = new WeightedChanceExecutor(
+            new WeightedChanceParam(() =>
+            {
+                try
                 {
-                    try
-                    {
-                        var random = new Random();
-                        var randomItem = Scp261.Singleton.Config.VendingMachineStock[random.Next(Scp261.Singleton.Config.VendingMachineStock.Count)];
-                        player.AddItem(randomItem);
-                        player.SendHint(Scp261.Singleton.Config.InteractionSuccessfulItems, 5f);
-                    }
-                    catch (Exception ex)
-                    {
-                        LogManager.Error($"Item chance action failed: {ex}");
-                    }
-                }, Scp261.Singleton.Config.ItemChance),
-                new WeightedChanceParam(() =>
+                    GiveRandomItem(player);
+                }
+                catch (Exception ex)
                 {
-                    try
-                    {
-                        if (Scp261.Singleton.Config.EnableEffects)
-                        {
-                            var random = new Random();
-                            var effectName = Scp261.Singleton.Config.EffectList[random.Next(Scp261.Singleton.Config.EffectList.Count)];
-                            var effectType = Type.GetType($"CustomPlayerEffects.{effectName}");
-                            if (effectType != null && typeof(StatusEffectBase).IsAssignableFrom(effectType))
-                                player.EnableEffect((StatusEffectBase)Activator.CreateInstance(effectType), 0,
-                                    random.Next(Scp261.Singleton.Config.MinEffectDuration, Scp261.Singleton.Config.MaxEffectDuration));
-                            player.SendHint(Scp261.Singleton.Config.InteractionSuccessfulEffects, 5f);
-                        }
-                        else
-                        {
-                            var random = new Random();
-                            var randomItem = Scp261.Singleton.Config.VendingMachineStock[random.Next(Scp261.Singleton.Config.VendingMachineStock.Count)];
-                            player.AddItem(randomItem);
-                            player.SendHint(Scp261.Singleton.Config.InteractionSuccessfulItems, 5f);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        LogManager.Error($"Effect chance action failed: {ex}");
-                    }
-                }, Scp261.Singleton.Config.EffectChance),
-                new WeightedChanceParam(() =>
+                    LogManager.Error($"Item chance action failed: {ex}");
+                }
+            }, Scp261.Singleton.Config.ItemChance),
+            new WeightedChanceParam(() =>
+            {
+                try
                 {
-                    try
+                    if (Scp261.Singleton.Config.EnableEffects)
                     {
-                        if (Scp261.Singleton.Config.EnableSizeChange)
-                        {
-                            player.Scale = Scp261.Singleton.Config.GnomedSize;
-                            player.SendHint(Scp261.Singleton.Config.InteractionSuccessfulSize, 5f);
-                        }
-                        else
-                        {
-                            var random = new Random();
-                            var randomItem = Scp261.Singleton.Config.VendingMachineStock[random.Next(Scp261.Singleton.Config.VendingMachineStock.Count)];
-                            player.AddItem(randomItem);
-                            player.SendHint(Scp261.Singleton.Config.InteractionSuccessfulItems, 5f);
-                        }
+                        var effectName =
+                            Scp261.Singleton.Config.EffectList[
+                                Random.Range(0, Scp261.Singleton.Config.EffectList.Count)];
+                        var effectType = Type.GetType($"CustomPlayerEffects.{effectName}");
+                        if (effectType != null && typeof(StatusEffectBase).IsAssignableFrom(effectType))
+                            player.EnableEffect((StatusEffectBase)Activator.CreateInstance(effectType), 0,
+                                Random.Range(Scp261.Singleton.Config.MinEffectDuration,
+                                    Scp261.Singleton.Config.MaxEffectDuration));
+                        player.SendHint(Scp261.Singleton.Config.InteractionSuccessfulEffects, 5f);
                     }
-                    catch (Exception ex)
+                    else
                     {
-                        LogManager.Error($"Size change action failed: {ex}");
+                        GiveRandomItem(player);
                     }
-                }, Scp261.Singleton.Config.SizeChangeChance),
-                new WeightedChanceParam(() =>
+                }
+                catch (Exception ex)
                 {
-                    try
-                    {
-                        if (Scp261.Singleton.Config.EnableExplode)
-                        {
-                            ExplosionUtils.ServerExplode(player.ReferenceHub, ExplosionType.Grenade);
-                            player.SendHint(Scp261.Singleton.Config.InteractionSuccessfulExplode, 5f);
-                        }
-                        else
-                        {
-                            var random = new Random();
-                            var randomItem = Scp261.Singleton.Config.VendingMachineStock[random.Next(Scp261.Singleton.Config.VendingMachineStock.Count)];
-                            player.AddItem(randomItem);
-                            player.SendHint(Scp261.Singleton.Config.InteractionSuccessfulItems, 5f);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        LogManager.Error($"Explode action failed: {ex}");
-                    }
-                }, Scp261.Singleton.Config.ExplodeChance),
-                new WeightedChanceParam(() =>
+                    LogManager.Error($"Effect chance action failed: {ex}");
+                }
+            }, Scp261.Singleton.Config.EffectChance),
+            new WeightedChanceParam(() =>
+            {
+                try
                 {
-                    try
+                    if (Scp261.Singleton.Config.EnableSizeChange)
                     {
-                        if (Scp261.Singleton.Config.EnableFlashbang)
-                        {
-                            TimedGrenadeProjectile.SpawnActive(player.Position, ItemType.GrenadeFlash, null, 2f);
-                            player.SendHint(Scp261.Singleton.Config.InteractionSuccessfulFlashbang, 5f);
-                        }
-                        else
-                        {
-                            var random = new Random();
-                            var randomItem = Scp261.Singleton.Config.VendingMachineStock[random.Next(Scp261.Singleton.Config.VendingMachineStock.Count)];
-                            player.AddItem(randomItem);
-                            player.SendHint(Scp261.Singleton.Config.InteractionSuccessfulItems, 5f);
-                        }
+                        player.Scale = Scp261.Singleton.Config.GnomedSize;
+                        player.SendHint(Scp261.Singleton.Config.InteractionSuccessfulSize, 5f);
                     }
-                    catch (Exception ex)
+                    else
                     {
-                        LogManager.Error($"Flashbang action failed: {ex}");
+                        GiveRandomItem(player);
                     }
-                }, Scp261.Singleton.Config.FlashbangChance),
-                new WeightedChanceParam(() =>
+                }
+                catch (Exception ex)
                 {
-                    try
-                    {
-                        if (Scp261.Singleton.Config.EnableTantrum)
-                        {
-                            TantrumHazard.Spawn(player.Position, player.Rotation, Vector3.one);
-                            player.SendHint(Scp261.Singleton.Config.InteractionSuccessfulTantrum, 5f);
-                        }
-                        else
-                        {
-                            var random = new Random();
-                            var randomItem = Scp261.Singleton.Config.VendingMachineStock[random.Next(Scp261.Singleton.Config.VendingMachineStock.Count)];
-                            player.AddItem(randomItem);
-                            player.SendHint(Scp261.Singleton.Config.InteractionSuccessfulItems, 5f);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        LogManager.Error($"Tantrum action failed: {ex}");
-                    }
-                }, Scp261.Singleton.Config.TantrumChance),
-                new WeightedChanceParam(() =>
+                    LogManager.Error($"Size change action failed: {ex}");
+                }
+            }, Scp261.Singleton.Config.SizeChangeChance),
+            new WeightedChanceParam(() =>
+            {
+                try
                 {
-                    try
+                    if (Scp261.Singleton.Config.EnableExplode)
                     {
-                        if (Scp261.Singleton.Config.RandomTeleport)
-                        {
-                            var randomDoor = Door.List
-                                .Where(d => !d.IsLocked && (!Decontamination.IsDecontaminating ||
-                                                            d.Zone != FacilityZone.LightContainment))
-                                .OrderBy(_ => Guid.NewGuid())
-                                .FirstOrDefault();
-                            if (randomDoor != null) player.Position = EnsurePositionSafety(randomDoor.Transform);
-                            player.SendHint(Scp261.Singleton.Config.InteractionSuccessfulTeleport, 5f);
-                        }
-                        else
-                        {
-                            var random = new Random();
-                            var randomItem = Scp261.Singleton.Config.VendingMachineStock[random.Next(Scp261.Singleton.Config.VendingMachineStock.Count)];
-                            player.AddItem(randomItem);
-                            player.SendHint(Scp261.Singleton.Config.InteractionSuccessfulItems, 5f);
-                        }
+                        ExplosionUtils.ServerExplode(player.ReferenceHub, ExplosionType.Grenade);
+                        player.SendHint(Scp261.Singleton.Config.InteractionSuccessfulExplode, 5f);
                     }
-                    catch (Exception ex)
+                    else
                     {
-                        LogManager.Error($"Teleport action failed: {ex}");
+                        GiveRandomItem(player);
                     }
-                }, Scp261.Singleton.Config.RandomTeleportChance)
-            );
-            weightedChances.Execute();
-        }
-        else
-        {
-            player.SendHint(Scp261.Singleton.Config.InteractionFailedMessage, 5f);
-        }
+                }
+                catch (Exception ex)
+                {
+                    LogManager.Error($"Explode action failed: {ex}");
+                }
+            }, Scp261.Singleton.Config.ExplodeChance),
+            new WeightedChanceParam(() =>
+            {
+                try
+                {
+                    if (Scp261.Singleton.Config.EnableFlashbang)
+                    {
+                        TimedGrenadeProjectile.SpawnActive(player.Position, ItemType.GrenadeFlash, null, 2f);
+                        player.SendHint(Scp261.Singleton.Config.InteractionSuccessfulFlashbang, 5f);
+                    }
+                    else
+                    {
+                        GiveRandomItem(player);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogManager.Error($"Flashbang action failed: {ex}");
+                }
+            }, Scp261.Singleton.Config.FlashbangChance),
+            new WeightedChanceParam(() =>
+            {
+                try
+                {
+                    if (Scp261.Singleton.Config.EnableTantrum)
+                    {
+                        TantrumHazard.Spawn(player.Position, player.Rotation, Vector3.one);
+                        player.SendHint(Scp261.Singleton.Config.InteractionSuccessfulTantrum, 5f);
+                    }
+                    else
+                    {
+                        GiveRandomItem(player);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogManager.Error($"Tantrum action failed: {ex}");
+                }
+            }, Scp261.Singleton.Config.TantrumChance),
+            new WeightedChanceParam(() =>
+            {
+                try
+                {
+                    if (Scp261.Singleton.Config.RandomTeleport)
+                    {
+                        var blockLcz = Decontamination.IsDecontaminating;
+                        var randomDoor = Door.List
+                            .Where(d => !d.IsLocked && (!blockLcz || d.Zone != FacilityZone.LightContainment))
+                            .OrderBy(_ => Guid.NewGuid())
+                            .FirstOrDefault();
+                        if (randomDoor != null) player.Position = EnsurePositionSafety(randomDoor.Transform);
+                        player.SendHint(Scp261.Singleton.Config.InteractionSuccessfulTeleport, 5f);
+                    }
+                    else
+                    {
+                        GiveRandomItem(player);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogManager.Error($"Teleport action failed: {ex}");
+                }
+            }, Scp261.Singleton.Config.RandomTeleportChance)
+        );
+        weightedChances.Execute();
     }
 
     private static Vector3 EnsurePositionSafety(Transform doorTransform)

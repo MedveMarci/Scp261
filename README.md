@@ -5,7 +5,8 @@
 ![Framework](https://img.shields.io/badge/.NET-4.8-purple)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
-> **SCP: Secret Laboratory LabAPI plugin** that spawns a Vending Machine (SCP-261), allowing players to use it for random items or effects in exchange for a coin.
+> **SCP: Secret Laboratory LabAPI plugin** that spawns a Vending Machine (SCP-261), allowing players to use it for
+> random items or effects in exchange for a coin.
 
 ## Support
 
@@ -15,7 +16,8 @@
 
 ## How It Works
 
-Players holding a **coin** can interact with the SCP-261 vending machine. The coin is consumed and one of the following outcomes is randomly selected based on configurable weights:
+Players holding a **coin** (or any other item listed in `activation_items`) can interact with the SCP-261 vending
+machine. The item is consumed and one of the following outcomes is randomly selected based on configurable weights:
 
 | Outcome     | Default Weight | Description                                              |
 |-------------|----------------|----------------------------------------------------------|
@@ -27,14 +29,15 @@ Players holding a **coin** can interact with the SCP-261 vending machine. The co
 | Tantrum     | 9              | Spawns a tantrum hazard at the player's location         |
 | Explosion   | 1              | Triggers a grenade explosion on the player               |
 
-> Weights do **not** need to add up to 100. Any module can be individually disabled — when disabled, it falls back to dispensing a random item instead.
+> Weights do **not** need to add up to 100. Any module can be individually disabled — when disabled, it falls back to
+> dispensing a random item instead.
 
 ---
 
 ## Dependencies
 
-- **ProjectMER** — required for spawning the vending machine schematic.
-  Install it from: https://github.com/Michal78900/ProjectMER/
+- **ProjectMER** — required for spawning the vending machine schematic. Install it
+  from: https://github.com/Michal78900/ProjectMER/
 
 ---
 
@@ -42,14 +45,14 @@ Players holding a **coin** can interact with the SCP-261 vending machine. The co
 
 1. Install [ProjectMER](https://github.com/Michal78900/ProjectMER/) if you haven't already.
 2. Download the latest release from [GitHub Releases](https://github.com/MedveMarci/Scp261/releases/latest):
-   - `Scp261.dll`
-   - `Scp261.zip`
+    - `Scp261.dll`
+    - `Scp261.zip`
 3. Place the `.dll` in your server's plugins folder:
-   - Linux: `~/.config/SCP Secret Laboratory/LabAPI/plugins/global/`
-   - Windows: `%appdata%/SCP Secret Laboratory/LabAPI/plugins/global/`
+    - Linux: `~/.config/SCP Secret Laboratory/LabAPI/plugins/global/`
+    - Windows: `%appdata%/SCP Secret Laboratory/LabAPI/plugins/global/`
 4. Extract the `Scp261.zip` file and place it in the ProjectMER schematics folder:
-   - Linux: `~/.config/SCP Secret Laboratory/LabAPI/configs/ProjectMER/Schematics/`
-   - Windows: `%appdata%/SCP Secret Laboratory/LabAPI/configs/ProjectMER/Schematics/`
+    - Linux: `~/.config/SCP Secret Laboratory/LabAPI/configs/ProjectMER/Schematics/`
+    - Windows: `%appdata%/SCP Secret Laboratory/LabAPI/configs/ProjectMER/Schematics/`
 5. Start the server — the config file is generated automatically on first launch.
 
 ---
@@ -57,51 +60,105 @@ Players holding a **coin** can interact with the SCP-261 vending machine. The co
 ## Configuration
 
 The config file is generated at:
+
 - Linux: `~/.config/SCP Secret Laboratory/LabAPI/configs/`
 - Windows: `%appdata%/SCP Secret Laboratory/LabAPI/configs/`
 
 ### Key settings
 
-| Option                             | Default                                        | Description                                     |
-|------------------------------------|------------------------------------------------|-------------------------------------------------|
-| `spawn_locations`                  | *(see below)*                                  | List of spawn locations for the vending machine |
-| `enable_effects`                   | `true`                                         | Enable the effects module                       |
-| `enable_size_change`               | `true`                                         | Enable the size change (gnomed) module          |
-| `enable_explode`                   | `true`                                         | Enable the explosion module                     |
-| `enable_flashbang`                 | `true`                                         | Enable the flashbang module                     |
-| `enable_tantrum`                   | `true`                                         | Enable the tantrum module                       |
-| `random_teleport`                  | `true`                                         | Enable the random teleport module               |
-| `item_chance`                      | `50`                                           | Weight for dispensing an item                   |
-| `effect_chance`                    | `30`                                           | Weight for applying an effect                   |
-| `size_change_chance`               | `5`                                            | Weight for the size change                      |
-| `explode_chance`                   | `1`                                            | Weight for the explosion                        |
-| `flashbang_chance`                 | `5`                                            | Weight for the flashbang                        |
-| `tantrum_chance`                   | `9`                                            | Weight for the tantrum                          |
-| `random_teleport_chance`           | `10`                                           | Weight for the teleport                         |
-| `min_effect_duration`              | `10`                                           | Minimum effect duration (seconds)               |
-| `max_effect_duration`              | `25`                                           | Maximum effect duration (seconds)               |
-| `gnomed_size`                      | `(1.13, 0.5, 1.13)`                            | Player scale when gnomed                        |
-| `vending_machine_stock`            | *(see below)*                                  | List of items the machine can dispense          |
-| `effect_list`                      | *(see below)*                                  | List of status effects the machine can apply    |
-| `interaction_successful_items`     | `"The vending machine dispensed something."`   | Hint shown when an item is dispensed            |
-| `interaction_successful_effects`   | `"The vending machine shook violently."`       | Hint shown when an effect is applied            |
-| `interaction_successful_size`      | `"The vending machine gnomed you."`            | Hint shown on size change                       |
-| `interaction_successful_explode`   | `"The vending machine exploded."`              | Hint shown on explosion                         |
-| `interaction_successful_flashbang` | `"The vending machine dispensed a weird can."` | Hint shown on flashbang                         |
-| `interaction_successful_tantrum`   | `"You shit yourself."`                         | Hint shown on tantrum                           |
-| `interaction_successful_teleport`  | `"You teleported to somewhere."`               | Hint shown on teleport                          |
-| `interaction_failed_message`       | `"You aren't holding a coin!"`                 | Hint shown when the player has no coin          |
+| Option                                   | Default                                        | Description                                     |
+|------------------------------------------|------------------------------------------------|-------------------------------------------------|
+| `spawn_locations`                        | *(see below)*                                  | List of spawn locations for the vending machine |
+| `spawn_only_once`                        | `false`                                        | Spawn at only one location per round            |
+| `activation_items`                       | `[Coin]`                                       | Items that can activate the vending machine     |
+| `enable_effects`                         | `true`                                         | Enable the effects module                       |
+| `enable_size_change`                     | `true`                                         | Enable the size change (gnomed) module          |
+| `enable_explode`                         | `true`                                         | Enable the explosion module                     |
+| `enable_flashbang`                       | `true`                                         | Enable the flashbang module                     |
+| `enable_tantrum`                         | `true`                                         | Enable the tantrum module                       |
+| `random_teleport`                        | `true`                                         | Enable the random teleport module               |
+| `prevent_teleport_to_decontaminated_lcz` | `true`                                         | Never teleport players into LCZ after decon     |
+| `spawn_weapons_with_ammo`                | `true`                                         | Dispense firearms loaded with ammunition        |
+| `item_chance`                            | `50`                                           | Weight for dispensing an item                   |
+| `effect_chance`                          | `30`                                           | Weight for applying an effect                   |
+| `size_change_chance`                     | `5`                                            | Weight for the size change                      |
+| `explode_chance`                         | `1`                                            | Weight for the explosion                        |
+| `flashbang_chance`                       | `5`                                            | Weight for the flashbang                        |
+| `tantrum_chance`                         | `9`                                            | Weight for the tantrum                          |
+| `random_teleport_chance`                 | `10`                                           | Weight for the teleport                         |
+| `min_effect_duration`                    | `10`                                           | Minimum effect duration (seconds)               |
+| `max_effect_duration`                    | `25`                                           | Maximum effect duration (seconds)               |
+| `gnomed_size`                            | `(1.13, 0.5, 1.13)`                            | Player scale when gnomed                        |
+| `vending_machine_stock`                  | *(see below)*                                  | List of items the machine can dispense          |
+| `effect_list`                            | *(see below)*                                  | List of status effects the machine can apply    |
+| `interaction_successful_items`           | `"The vending machine dispensed something."`   | Hint shown when an item is dispensed            |
+| `interaction_successful_effects`         | `"The vending machine shook violently."`       | Hint shown when an effect is applied            |
+| `interaction_successful_size`            | `"The vending machine gnomed you."`            | Hint shown on size change                       |
+| `interaction_successful_explode`         | `"The vending machine exploded."`              | Hint shown on explosion                         |
+| `interaction_successful_flashbang`       | `"The vending machine dispensed a weird can."` | Hint shown on flashbang                         |
+| `interaction_successful_tantrum`         | `"You shit yourself."`                         | Hint shown on tantrum                           |
+| `interaction_successful_teleport`        | `"You teleported to somewhere."`               | Hint shown on teleport                          |
+| `interaction_failed_message`             | `"You aren't holding a coin!"`                 | Hint shown when the held item can't activate it |
 
-### Default spawn locations
+### Spawn locations
 
-By default, the vending machine spawns in the **LCZ 173** room with a 100% chance. Each entry in `spawn_locations` supports:
+Each entry in `spawn_locations` supports:
 
-| Field       | Description                                                      |
-|-------------|------------------------------------------------------------------|
-| `room_name` | The room where the machine spawns (uses `RoomName` enum values)  |
-| `position`  | Local-space offset within the room                               |
-| `rotation`  | Local-space rotation within the room                             |
-| `chance`    | Spawn chance (0–100). Roll must be **below** this value to spawn |
+| Field       | Description                                                     |
+|-------------|-----------------------------------------------------------------|
+| `room_name` | The room where the machine spawns (uses `RoomName` enum values) |
+| `position`  | Local-space offset within the room                              |
+| `rotation`  | Local-space rotation within the room                            |
+| `chance`    | Spawn chance / weight — see `spawn_only_once` below             |
+
+You can list **as many locations as you want**. How they are used depends on `spawn_only_once`:
+
+- **`spawn_only_once: false`** *(default)* — every location is rolled independently against its own `chance` (0–100), so
+  **multiple machines can spawn in the same round**.
+- **`spawn_only_once: true`** — exactly **one** machine spawns per round. The `chance` values are then treated as
+  relative weights to pick which of the listed locations it appears at. A location with `chance: 30` is picked twice as
+  often as one with `chance: 15`; a location with `chance: 0` is never picked.
+
+Example — one machine per round, randomly placed in one of three rooms:
+
+```yaml
+spawn_only_once: true
+spawn_locations:
+- room_name: Lcz173
+  position: {x: 6.816, y: -1.428, z: 6.55}
+  rotation: {x: 0, y: -180, z: 0}
+  chance: 50
+- room_name: HczArmory
+  position: {x: 0, y: 0, z: 0}
+  rotation: {x: 0, y: 0, z: 0}
+  chance: 30
+- room_name: EzOfficeSmall
+  position: {x: 0, y: 0, z: 0}
+  rotation: {x: 0, y: 0, z: 0}
+  chance: 20
+```
+
+### Activation item
+
+By default only a **coin** activates the machine. Add or replace entries in `activation_items` to accept other items —
+the held item is consumed on use:
+
+```yaml
+activation_items:
+- Coin
+- SCP330
+```
+
+### Weapon ammunition
+
+Set `spawn_weapons_with_ammo: false` to make dispensed firearms come out **empty**, the same way SCP-1162 hands them
+over. Non-firearm items are unaffected.
+
+### Decontamination and teleporting
+
+While `prevent_teleport_to_decontaminated_lcz` is `true` (default), the random teleport module will never drop a player
+into the Light Containment Zone once decontamination has begun, so nobody gets teleported into a lethal room. Set it to
+`false` to allow LCZ as a teleport destination at any time.
 
 ### Available room names
 
@@ -128,7 +185,9 @@ By default, the vending machine spawns in the **LCZ 173** room with a 100% chanc
 
 ### Default item stock
 
-`KeycardChaosInsurgency`, `KeycardContainmentEngineer`, `KeycardFacilityManager`, `GunA7`, `GunFSP9`, `GunLogicer`, `GunE11SR`, `GunRevolver`, `GunCrossvec`, `GunCom45`, `Jailbird`, `ParticleDisruptor`, `SCP018`, `SCP207`, `AntiSCP207`, `KeycardJanitor`, `KeycardScientist`, `KeycardZoneManager`, `KeycardGuard`, `MicroHID`, `SCP500`, `SCP268`, `SCP1853`
+`KeycardChaosInsurgency`, `KeycardContainmentEngineer`, `KeycardFacilityManager`, `GunA7`, `GunFSP9`, `GunLogicer`,
+`GunE11SR`, `GunRevolver`, `GunCrossvec`, `GunCom45`, `Jailbird`, `ParticleDisruptor`, `SCP018`, `SCP207`, `AntiSCP207`,
+`KeycardJanitor`, `KeycardScientist`, `KeycardZoneManager`, `KeycardGuard`, `MicroHID`, `SCP500`, `SCP268`, `SCP1853`
 
 ### Default effects
 

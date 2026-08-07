@@ -20,30 +20,29 @@ public class Configs
             Chance = 100f
         }
     ];
-    
-    public class CustomRoomLocationData
-    {
-        public RoomName RoomName { get; set; }
-        public Vector3 Position { get; set; }
-        public Vector3 Rotation { get; set; }
-        public float Chance { get; set; }
-    }
-    
+
+    [Description(
+        "When enabled, SCP-261 spawns at only one of the configured locations per round, picked randomly using the Chance values as weights. When disabled, every location is rolled on its own and multiple machines can spawn at once.")]
+    public bool SpawnOnlyOnce { get; set; } = false;
+
+    [Description("List of items that can activate the vending machine.")]
+    public List<ItemType> ActivationItems { get; set; } = [ItemType.Coin];
+
     [Description("Enable the effects module. When disabled, the vending machine will not apply effects to players.")]
     public bool EnableEffects { get; set; } = true;
-    
+
     [Description("Enable the size change module. When disabled, the vending machine will not change player size.")]
     public bool EnableSizeChange { get; set; } = true;
-    
+
     [Description("Enable the explode module. When disabled, the vending machine will not explode.")]
     public bool EnableExplode { get; set; } = true;
-    
+
     [Description("Enable the flashbang module. When disabled, the vending machine will not dispense flashbangs.")]
     public bool EnableFlashbang { get; set; } = true;
-    
+
     [Description("Enable the tantrum module. When disabled, the vending machine will not trigger tantrums.")]
     public bool EnableTantrum { get; set; } = true;
-    
+
     [Description("Enable the random teleport module. When disabled, the vending machine will not teleport players.")]
     public bool RandomTeleport { get; set; } = true;
 
@@ -52,22 +51,22 @@ public class Configs
 
     [Description("Chance for effects module to be selected. (They don't need to add up to 100.)")]
     public int EffectChance { get; set; } = 30;
-    
+
     [Description("Chance for size change module to be selected. (They don't need to add up to 100.)")]
     public int SizeChangeChance { get; set; } = 5;
-    
+
     [Description("Chance for explode module to be selected. (They don't need to add up to 100.)")]
     public int ExplodeChance { get; set; } = 1;
-    
+
     [Description("Chance for flashbang module to be selected. (They don't need to add up to 100.)")]
     public int FlashbangChance { get; set; } = 5;
-    
+
     [Description("Chance for tantrum module to be selected. (They don't need to add up to 100.)")]
     public int TantrumChance { get; set; } = 9;
-    
+
     [Description("Chance for random teleport module to be selected. (They don't need to add up to 100.)")]
     public int RandomTeleportChance { get; set; } = 10;
-    
+
     [Description("Message displayed when the vending machine successfully dispenses an item.")]
     public string InteractionSuccessfulItems { get; set; } =
         "<b>The vending machine <color=#42f57b>dispensed something.</color></b>";
@@ -90,11 +89,11 @@ public class Configs
 
     [Description("Message displayed when the vending machine triggers a tantrum effect.")]
     public string InteractionSuccessfulTantrum { get; set; } = "<b>You <color=#42f57b>shit yourself.</color></b>";
-    
+
     [Description("Message displayed when the vending machine teleports the player.")]
     public string InteractionSuccessfulTeleport { get; set; } = "<b>You teleported to somewhere.</b>";
-    
-    [Description("Message displayed when the player does not have a coin to use the vending machine.")]
+
+    [Description("Message displayed when the player is not holding an item that can activate the vending machine.")]
     public string InteractionFailedMessage { get; set; } = "<b>You aren't <color=red>holding a coin!</color></b>";
 
     [Description("List of effects that the vending machine can apply:")]
@@ -140,6 +139,10 @@ public class Configs
         ItemType.SCP1853
     ];
 
+    [Description(
+        "When disabled, firearms dispensed by the vending machine come without ammo.")]
+    public bool SpawnWeaponsWithAmmo { get; set; } = true;
+
     [Description("Minimum duration for effects applied by the vending machine:")]
     public int MinEffectDuration { get; set; } = 10;
 
@@ -148,4 +151,12 @@ public class Configs
 
     [Description("Size change settings:")] 
     public Vector3 GnomedSize { get; set; } = new(1.13f, 0.5f, 1.13f);
+
+    public class CustomRoomLocationData
+    {
+        public RoomName RoomName { get; set; }
+        public Vector3 Position { get; set; }
+        public Vector3 Rotation { get; set; }
+        public float Chance { get; set; }
+    }
 }

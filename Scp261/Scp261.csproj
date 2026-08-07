@@ -28,10 +28,10 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="BepInEx.AssemblyPublicizer.MSBuild" Version="0.4.3" PrivateAssets="all" />
-        <PackageReference Include="Northwood.LabAPI" Version="1.1.7" />
+        <PackageReference Include="BepInEx.AssemblyPublicizer.MSBuild" Version="0.4.3" PrivateAssets="all"/>
+        <PackageReference Include="Northwood.LabAPI" Version="1.1.7"/>
         <PackageReference Include="System.Net.Http" Version="4.3.4"/>
-        <PackageReference Include="System.Text.Json" Version="10.0.9" />
+        <PackageReference Include="System.Text.Json" Version="10.0.9"/>
     </ItemGroup>
 
     <ItemGroup>
@@ -39,7 +39,7 @@
         <None Include="..\CHANGELOG.md" Pack="true" PackagePath="\"/>
         <None Include="..\LICENSE" Pack="true" PackagePath="\"/>
     </ItemGroup>
-    
+
     <ItemGroup>
         <Reference Include="Assembly-CSharp" HintPath="$(sl_References)\Assembly-CSharp.dll" Publicize="true"/>
         <Reference Include="CommandSystem.Core" HintPath="$(sl_References)\CommandSystem.Core.dll"/>
