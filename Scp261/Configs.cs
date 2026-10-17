@@ -27,6 +27,9 @@ public class Configs
 
     [Description("List of items that can activate the vending machine.")]
     public List<ItemType> ActivationItems { get; set; } = [ItemType.Coin];
+    
+    [Description("Allow SCP-3114 to use the vending machine. When disabled, SCP-3114 will not be able to use the vending machine.")]
+    public bool CanScp3114Use { get; set; } = false;
 
     [Description("Enable the effects module. When disabled, the vending machine will not apply effects to players.")]
     public bool EnableEffects { get; set; } = true;
@@ -96,6 +99,9 @@ public class Configs
     [Description("Message displayed when the player is not holding an item that can activate the vending machine.")]
     public string InteractionFailedMessage { get; set; } = "<b>You aren't <color=red>holding a coin!</color></b>";
 
+    [Description("Message displayed when the player is not allowed to use the vending machine.")]
+    public string InteractionDeniedMessage { get; set; } = "<b>You<color=red>can't use SCP-261.</color></b>";
+    
     [Description("List of effects that the vending machine can apply:")]
     public List<string> EffectList { get; set; } =
     [

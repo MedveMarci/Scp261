@@ -6,6 +6,7 @@ using LabApi.Events.Arguments.PlayerEvents;
 using LabApi.Events.Handlers;
 using LabApi.Features.Wrappers;
 using MapGeneration;
+using PlayerRoles;
 using PlayerRoles.FirstPersonControl;
 using ProjectMER.Features;
 using ProjectMER.Features.Objects;
@@ -22,19 +23,19 @@ internal static class EventHandler
 
     public static void EnableEvents()
     {
-        PlayerEvents.InteractedToy += Interacted;
+        PlayerEvents.InteractedToy += OnPlayerInteractedToy;
         PlayerEvents.ChangedRole += OnChangedRole;
-        ServerEvents.WaitingForPlayers += OnWaitingForPlayers;
+        ServerEvents.RoundStarted += OnRoundStarted;
     }
 
     public static void DisableEvents()
     {
-        PlayerEvents.InteractedToy -= Interacted;
+        PlayerEvents.InteractedToy -= OnPlayerInteractedToy;
         PlayerEvents.ChangedRole -= OnChangedRole;
-        ServerEvents.WaitingForPlayers -= OnWaitingForPlayers;
+        ServerEvents.RoundStarted -= OnRoundStarted;
     }
 
-    private static void OnWaitingForPlayers()
+    private static void OnRoundStarted()
     {
         VersionManager.CheckForUpdates();
         foreach (var schematic in Schematic)
@@ -99,6 +100,13 @@ internal static class EventHandler
         var rotation = room.Transform.rotation * Quaternion.Euler(spawnLocation.Rotation);
 
         var schematic = ObjectSpawner.SpawnSchematic("Scp261", position, rotation);
+        
+        if (schematic == null)
+        {
+            LogManager.Warn("Schematic spawn failed: schematic 'Scp261' not found.");
+            return;
+        }
+
         Schematic.Add(schematic);
     }
 
@@ -123,11 +131,17 @@ internal static class EventHandler
         player.SendHint(Scp261.Singleton.Config.InteractionSuccessfulItems, 5f);
     }
 
-    private static void Interacted(PlayerInteractedToyEventArgs ev)
+    private static void OnPlayerInteractedToy(PlayerInteractedToyEventArgs ev)
     {
         var player = Player.Get(ev.Player.ReferenceHub);
         if (!ev.Interactable.GameObject.name.Equals("Vending")) return;
 
+        if (ev.Player.Role == RoleTypeId.Scp3114 && !Scp261.Singleton.Config.CanScp3114Use)
+        {
+            player.SendHint(Scp261.Singleton.Config.InteractionDeniedMessage, 5f);
+            return;
+        }
+        
         var activationItems = Scp261.Singleton.Config.ActivationItems;
         if (player.CurrentItem == null || activationItems == null ||
             !activationItems.Contains(player.CurrentItem.Type))

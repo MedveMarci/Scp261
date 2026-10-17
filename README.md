@@ -1,16 +1,9 @@
 # SCP-261
 
-![Downloads](https://img.shields.io/github/downloads/MedveMarci/Scp261/total)
-[![Version](https://img.shields.io/github/v/release/MedveMarci/Scp261?&label=Version&color=blue)](https://github.com/MedveMarci/Scp261/releases/latest)
-![Framework](https://img.shields.io/badge/.NET-4.8-purple)
-![License](https://img.shields.io/badge/license-MIT-green)
+[![Version](https://img.shields.io/github/v/release/MedveMarci/Scp261?label=Version&color=d500ff)](https://github.com/MedveMarci/Scp261/releases/latest) [![LabAPI Version](https://img.shields.io/badge/LabAPI_Version-1.1.7-51f4ff)](https://github.com/northwood-studios/LabAPI/releases/tag/1.1.7) [![SCP:SL Version](https://img.shields.io/badge/SCP:SL_Version-14.2.7-e5b200)](https://store.steampowered.com/app/700330/SCP_Secret_Laboratory/) [![Downloads](https://img.shields.io/github/downloads/MedveMarci/Scp261/total?label=Downloads&color=ffbf00)](https://github.com/MedveMarci/Scp261/releases) [![License](https://img.shields.io/github/license/MedveMarci/Scp261?label=License&color=2ea44f)](LICENSE)
 
-> **SCP: Secret Laboratory LabAPI plugin** that spawns a Vending Machine (SCP-261), allowing players to use it for
-> random items or effects in exchange for a coin.
-
-## Support
-
-<a href='https://discord.gg/KmpA8cfaSA'><img src='https://www.allkpop.com/upload/2021/01/content/262046/1611711962-discord-button.png' height="80"></a>
+An SCP: Secret Laboratory [LabAPI](https://github.com/northwood-studios/LabAPI) plugin which spawns a vending machine
+(SCP-261) that players can use for random items or effects in exchange for a coin.
 
 ---
 
@@ -48,11 +41,11 @@ machine. The item is consumed and one of the following outcomes is randomly sele
     - `Scp261.dll`
     - `Scp261.zip`
 3. Place the `.dll` in your server's plugins folder:
+    - Windows: `%AppData%\SCP Secret Laboratory\LabAPI\plugins\global\`
     - Linux: `~/.config/SCP Secret Laboratory/LabAPI/plugins/global/`
-    - Windows: `%appdata%/SCP Secret Laboratory/LabAPI/plugins/global/`
 4. Extract the `Scp261.zip` file and place it in the ProjectMER schematics folder:
+    - Windows: `%AppData%\SCP Secret Laboratory\LabAPI\configs\ProjectMER\Schematics\`
     - Linux: `~/.config/SCP Secret Laboratory/LabAPI/configs/ProjectMER/Schematics/`
-    - Windows: `%appdata%/SCP Secret Laboratory/LabAPI/configs/ProjectMER/Schematics/`
 5. Start the server — the config file is generated automatically on first launch.
 
 ---
@@ -61,8 +54,8 @@ machine. The item is consumed and one of the following outcomes is randomly sele
 
 The config file is generated at:
 
+- Windows: `%AppData%\SCP Secret Laboratory\LabAPI\configs\`
 - Linux: `~/.config/SCP Secret Laboratory/LabAPI/configs/`
-- Windows: `%appdata%/SCP Secret Laboratory/LabAPI/configs/`
 
 ### Key settings
 
@@ -195,6 +188,12 @@ into the Light Containment Zone once decontamination has begun, so nobody gets t
 
 ---
 
+## Support
+
+<a href="https://discord.gg/KmpA8cfaSA"><img src="https://www.allkpop.com/upload/2021/01/content/262046/1611711962-discord-button.png" height="80"></a>
+
+---
+
 ## Credits
 
-- Developed by **MedveMarci**
+- Made by [MedveMarci](https://github.com/MedveMarci)
