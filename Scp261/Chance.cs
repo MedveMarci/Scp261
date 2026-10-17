@@ -16,8 +16,8 @@ public class WeightedChanceExecutor(params WeightedChanceParam[] parameters)
 
     public void Execute()
     {
-        var numericValue = _random.NextDouble() * RatioSum;
-        foreach (var parameter in Parameters)
+        double numericValue = _random.NextDouble() * RatioSum;
+        foreach (WeightedChanceParam parameter in Parameters)
         {
             numericValue -= parameter.Ratio;
             if (!(numericValue <= 0))
@@ -32,5 +32,6 @@ public class WeightedChanceExecutor(params WeightedChanceParam[] parameters)
 public class WeightedChanceParam(Action func, double ratio)
 {
     public Action Func { get; } = func;
+
     public double Ratio { get; } = ratio;
 }

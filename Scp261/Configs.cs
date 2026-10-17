@@ -21,13 +21,12 @@ public class Configs
         }
     ];
 
-    [Description(
-        "When enabled, SCP-261 spawns at only one of the configured locations per round, picked randomly using the Chance values as weights. When disabled, every location is rolled on its own and multiple machines can spawn at once.")]
+    [Description("When enabled, SCP-261 spawns at only one of the configured locations per round, picked randomly using the Chance values as weights. When disabled, every location is rolled on its own and multiple machines can spawn at once.")]
     public bool SpawnOnlyOnce { get; set; } = false;
 
     [Description("List of items that can activate the vending machine.")]
     public List<ItemType> ActivationItems { get; set; } = [ItemType.Coin];
-    
+
     [Description("Allow SCP-3114 to use the vending machine. When disabled, SCP-3114 will not be able to use the vending machine.")]
     public bool CanScp3114Use { get; set; } = false;
 
@@ -71,24 +70,19 @@ public class Configs
     public int RandomTeleportChance { get; set; } = 10;
 
     [Description("Message displayed when the vending machine successfully dispenses an item.")]
-    public string InteractionSuccessfulItems { get; set; } =
-        "<b>The vending machine <color=#42f57b>dispensed something.</color></b>";
+    public string InteractionSuccessfulItems { get; set; } = "<b>The vending machine <color=#42f57b>dispensed something.</color></b>";
 
     [Description("Message displayed when the vending machine successfully applies effects.")]
-    public string InteractionSuccessfulEffects { get; set; } =
-        "<b>The vending machine <color=#42f57b>shook violently.</color></b>";
+    public string InteractionSuccessfulEffects { get; set; } = "<b>The vending machine <color=#42f57b>shook violently.</color></b>";
 
     [Description("Message displayed when the vending machine successfully changes player size.")]
-    public string InteractionSuccessfulSize { get; set; } =
-        "<b>The vending machine <color=#42f57b>gnomed you.</color></b>";
+    public string InteractionSuccessfulSize { get; set; } = "<b>The vending machine <color=#42f57b>gnomed you.</color></b>";
 
     [Description("Message displayed when the vending machine successfully explodes.")]
-    public string InteractionSuccessfulExplode { get; set; } =
-        "<b>The vending machine <color=#42f57b>exploded.</color></b>";
+    public string InteractionSuccessfulExplode { get; set; } = "<b>The vending machine <color=#42f57b>exploded.</color></b>";
 
     [Description("Message displayed when the vending machine successfully dispenses a flashbang.")]
-    public string InteractionSuccessfulFlashbang { get; set; } =
-        "<b>The vending machine <color=#42f57b>dispensed a weird can.</color></b>";
+    public string InteractionSuccessfulFlashbang { get; set; } = "<b>The vending machine <color=#42f57b>dispensed a weird can.</color></b>";
 
     [Description("Message displayed when the vending machine triggers a tantrum effect.")]
     public string InteractionSuccessfulTantrum { get; set; } = "<b>You <color=#42f57b>shit yourself.</color></b>";
@@ -101,7 +95,7 @@ public class Configs
 
     [Description("Message displayed when the player is not allowed to use the vending machine.")]
     public string InteractionDeniedMessage { get; set; } = "<b>You<color=red>can't use SCP-261.</color></b>";
-    
+
     [Description("List of effects that the vending machine can apply:")]
     public List<string> EffectList { get; set; } =
     [
@@ -145,8 +139,7 @@ public class Configs
         ItemType.SCP1853
     ];
 
-    [Description(
-        "When disabled, firearms dispensed by the vending machine come without ammo.")]
+    [Description("When disabled, firearms dispensed by the vending machine come without ammo.")]
     public bool SpawnWeaponsWithAmmo { get; set; } = true;
 
     [Description("Minimum duration for effects applied by the vending machine:")]
@@ -155,14 +148,16 @@ public class Configs
     [Description("Maximum duration for effects applied by the vending machine:")]
     public int MaxEffectDuration { get; set; } = 25;
 
-    [Description("Size change settings:")] 
-    public Vector3 GnomedSize { get; set; } = new(1.13f, 0.5f, 1.13f);
+    [Description("Size change settings:")] public Vector3 GnomedSize { get; set; } = new(1.13f, 0.5f, 1.13f);
 
     public class CustomRoomLocationData
     {
         public RoomName RoomName { get; set; }
+
         public Vector3 Position { get; set; }
+
         public Vector3 Rotation { get; set; }
+
         public float Chance { get; set; }
     }
 }
