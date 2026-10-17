@@ -51,7 +51,7 @@
         <Reference Include="ProjectMER" HintPath="$(labapi_plugins)\ProjectMER.dll"/>
     </ItemGroup>
 
-    <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(OS)' == 'Windows_NT'">
         <Exec Command="xcopy &quot;$(TargetPath)&quot; &quot;%appdata%\SCP Secret Laboratory\LabAPI\plugins\global\&quot; /y"/>
     </Target>
 
